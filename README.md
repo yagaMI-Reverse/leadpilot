@@ -6,6 +6,8 @@ with an AI summary, a full transcript, and optional Telegram delivery.
 
 **Stack:** Next.js 14 (App Router) · TypeScript · Tailwind CSS · Framer Motion · Node API routes
 
+🔗 **Live demo:** https://leadpilot-umber.vercel.app — finish the chat on the landing page and watch your lead appear on the [dashboard](https://leadpilot-umber.vercel.app/dashboard).
+
 ![LeadPilot](./screenshot.png)
 
 ---
