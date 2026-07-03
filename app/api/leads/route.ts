@@ -38,7 +38,9 @@ export async function POST(req: NextRequest) {
   };
 
   addLead(lead);
-  notifyTelegram(lead).catch(() => {}); // fire-and-forget; never blocks the reply
+  // Awaited on purpose: on serverless the runtime freezes right after the
+  // response, so a fire-and-forget fetch would be killed mid-flight.
+  await notifyTelegram(lead).catch(() => {});
   return NextResponse.json(lead, { status: 201 });
 }
 
