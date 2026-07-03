@@ -1,16 +1,21 @@
 import { Lead } from "./types";
 
 /**
- * Demo store: in-memory with seeded sample leads so the dashboard is alive
- * on first load. In production swap for Postgres/Supabase — the API surface
- * (list/create/update) stays identical.
+ * Lead store. With SUPABASE_URL + SUPABASE_SECRET_KEY set, leads persist in
+ * Postgres (survives serverless instance churn — required on Vercel). Without
+ * them it falls back to seeded in-memory data, so local dev needs no config.
+ * Seeds are always merged in so the demo dashboard is never empty.
  */
+const SUPABASE_URL = (process.env.SUPABASE_URL ?? "").replace(/\/$/, "");
+const SUPABASE_KEY = process.env.SUPABASE_SECRET_KEY;
+const DB_ON = Boolean(SUPABASE_URL && SUPABASE_KEY);
+
 const g = globalThis as unknown as { __leads?: Lead[] };
 
 const daysAgo = (d: number, h = 0) =>
   new Date(Date.now() - d * 86400000 - h * 3600000).toISOString();
 
-function seed(): Lead[] {
+function seeds(): Lead[] {
   return [
     {
       id: "ld-7f2a",
@@ -104,11 +109,86 @@ function seed(): Lead[] {
   ];
 }
 
-export function getLeads(): Lead[] {
-  if (!g.__leads) g.__leads = seed();
+function sbHeaders(): Record<string, string> {
+  return {
+    apikey: SUPABASE_KEY as string,
+    Authorization: `Bearer ${SUPABASE_KEY}`,
+    "Content-Type": "application/json",
+  };
+}
+
+type Row = {
+  id: string;
+  name: string;
+  contact: string;
+  service: string;
+  details: string;
+  urgency: Lead["urgency"];
+  score: Lead["score"];
+  status: Lead["status"];
+  summary: string;
+  transcript: Lead["transcript"];
+  created_at: string;
+};
+
+const fromRow = (r: Row): Lead => ({
+  id: r.id,
+  name: r.name,
+  contact: r.contact,
+  service: r.service,
+  details: r.details,
+  urgency: r.urgency,
+  score: r.score,
+  status: r.status,
+  summary: r.summary,
+  transcript: r.transcript ?? [],
+  createdAt: r.created_at,
+});
+
+export async function getLeads(): Promise<Lead[]> {
+  if (DB_ON) {
+    try {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/leadpilot_leads?select=*&order=created_at.desc&limit=100`,
+        { headers: sbHeaders(), cache: "no-store" },
+      );
+      if (res.ok) {
+        const rows = (await res.json()) as Row[];
+        return [...rows.map(fromRow), ...seeds()];
+      }
+    } catch {
+      /* fall back to memory below */
+    }
+  }
+  if (!g.__leads) g.__leads = seeds();
   return g.__leads;
 }
 
-export function addLead(lead: Lead): void {
-  getLeads().unshift(lead);
+export async function addLead(lead: Lead): Promise<void> {
+  if (DB_ON) {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/leadpilot_leads`, {
+        method: "POST",
+        headers: { ...sbHeaders(), Prefer: "return=minimal" },
+        body: JSON.stringify({
+          id: lead.id,
+          name: lead.name,
+          contact: lead.contact,
+          service: lead.service,
+          details: lead.details,
+          urgency: lead.urgency,
+          score: lead.score,
+          status: lead.status,
+          summary: lead.summary,
+          transcript: lead.transcript,
+          created_at: lead.createdAt,
+        }),
+      });
+      if (res.ok) return;
+    } catch {
+      /* fall back to memory below */
+    }
+  }
+  if (!g.__leads) g.__leads = seeds();
+  g.__leads.unshift(lead);
 }

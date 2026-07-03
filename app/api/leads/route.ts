@@ -6,7 +6,7 @@ import { Lead, SCORE_FOR_URGENCY, TranscriptEntry, Urgency } from "@/lib/types";
 export const runtime = "nodejs";
 
 export async function GET() {
-  return NextResponse.json(getLeads());
+  return NextResponse.json(await getLeads());
 }
 
 type CreateBody = {
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     createdAt: new Date().toISOString(),
   };
 
-  addLead(lead);
+  await addLead(lead);
   // Awaited on purpose: on serverless the runtime freezes right after the
   // response, so a fire-and-forget fetch would be killed mid-flight.
   await notifyTelegram(

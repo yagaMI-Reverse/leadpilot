@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     createdAt: new Date().toISOString(),
   };
 
-  addLead(lead);
+  await addLead(lead);
   await notifyTelegram(
     [
       `📞 New ${lead.score.toUpperCase()} lead from a VOICE call — ${lead.service}`,
