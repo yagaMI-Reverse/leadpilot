@@ -4,6 +4,7 @@ import {
   LayoutDashboard, MessageSquareText, Send, ShieldCheck, Zap,
 } from "lucide-react";
 import IntakeWidget from "@/components/IntakeWidget";
+import SubscribeButton from "@/components/SubscribeButton";
 
 export default function Landing() {
   return (
@@ -153,10 +154,17 @@ export default function Landing() {
                     </li>
                   ))}
                 </ul>
-                <a href="#demo" className={`mt-6 w-full ${p.featured ? "btn-primary" : "btn-ghost"}`}>Start with the demo</a>
+                {p.featured ? (
+                  <SubscribeButton />
+                ) : (
+                  <a href="#demo" className="btn-ghost mt-6 w-full">Start with the demo</a>
+                )}
               </div>
             ))}
           </div>
+          <p className="mt-6 text-center text-xs text-ink-faint">
+            Checkout runs in Lemon Squeezy <strong>test mode</strong> — try it with card 4242 4242 4242 4242, any future date, any CVC. No real charges.
+          </p>
         </div>
       </section>
 
