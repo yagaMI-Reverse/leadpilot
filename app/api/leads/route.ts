@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { addLead, getLeads } from "@/lib/store";
+import { notifyTelegram } from "@/lib/notify";
 import { Lead, SCORE_FOR_URGENCY, TranscriptEntry, Urgency } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -40,7 +41,13 @@ export async function POST(req: NextRequest) {
   addLead(lead);
   // Awaited on purpose: on serverless the runtime freezes right after the
   // response, so a fire-and-forget fetch would be killed mid-flight.
-  await notifyTelegram(lead).catch(() => {});
+  await notifyTelegram(
+    [
+      `🔥 New ${lead.score.toUpperCase()} lead — ${lead.service}`,
+      `👤 ${lead.name} · ${lead.contact}`,
+      `📝 ${lead.summary}`,
+    ].join("\n"),
+  ).catch(() => {});
   return NextResponse.json(lead, { status: 201 });
 }
 
@@ -75,19 +82,3 @@ async function summarize(b: CreateBody): Promise<string> {
   return `${b.service}: ${b.details.slice(0, 90) || "no details given"} (${urgencyNote})`;
 }
 
-/** Optional Telegram handoff — set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID env vars. */
-async function notifyTelegram(lead: Lead): Promise<void> {
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chat = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chat) return;
-  const text = [
-    `🔥 New ${lead.score.toUpperCase()} lead — ${lead.service}`,
-    `👤 ${lead.name} · ${lead.contact}`,
-    `📝 ${lead.summary}`,
-  ].join("\n");
-  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chat, text }),
-  });
-}

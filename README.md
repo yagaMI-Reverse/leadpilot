@@ -29,6 +29,11 @@ with an AI summary, a full transcript, and optional Telegram delivery.
   (Lemon Squeezy, test mode — same session + webhook pattern as Stripe Checkout). An
   HMAC-verified webhook confirms the subscription and notifies the team in Telegram.
   Try it with test card `4242 4242 4242 4242`.
+- **AI voice agent** — click **"Talk to our AI"** and speak to the intake assistant right in
+  the browser (Vapi + Claude). It walks the same guided flow by voice; after the call, an
+  end-of-call webhook turns the conversation into a scored lead with a transcript — the
+  exact same pipeline the chat widget feeds. Voice guardrails: never quotes prices, never
+  promises outcomes, escalates to a human callback.
 - **Dashboard** — KPIs (total, hot, booked, est. recovered revenue), a leads table, and a
   detail drawer with the full conversation transcript.
 

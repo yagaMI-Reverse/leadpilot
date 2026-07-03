@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import IntakeWidget from "@/components/IntakeWidget";
 import SubscribeButton from "@/components/SubscribeButton";
+import VoiceCallButton from "@/components/VoiceCallButton";
 
 export default function Landing() {
   return (
@@ -45,6 +46,7 @@ export default function Landing() {
           </p>
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <a href="#demo" className="btn-primary">Try the live demo <ArrowRight className="h-4 w-4" aria-hidden /></a>
+            <VoiceCallButton />
             <Link href="/dashboard" className="btn-ghost">See collected leads</Link>
           </div>
           <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-dim">
