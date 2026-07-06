@@ -4,7 +4,7 @@ import {
   LayoutDashboard, MessageSquareText, Send, ShieldCheck, Zap,
 } from "lucide-react";
 import IntakeWidget from "@/components/IntakeWidget";
-import SubscribeButton from "@/components/SubscribeButton";
+import Pricing from "@/components/Pricing";
 import VoiceCallButton from "@/components/VoiceCallButton";
 
 export default function Landing() {
@@ -130,45 +130,7 @@ export default function Landing() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="border-t border-line bg-white py-16">
-        <div className="container-page">
-          <h2 className="text-center font-display text-3xl">Simple pricing</h2>
-          <p className="mt-2 text-center text-ink-dim">Pays for itself with one recovered job.</p>
-          <div className="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-3">
-            {[
-              { name: "Starter", price: "$49", tag: "per month", items: ["AI intake on your site", "Email lead delivery", "Lead dashboard", "100 conversations/mo"] },
-              { name: "Growth", price: "$99", tag: "per month", featured: true, items: ["Everything in Starter", "Telegram + CRM handoff", "Hot-lead routing", "AI summaries", "Unlimited conversations"] },
-              { name: "Custom", price: "Let's talk", tag: "for multi-location", items: ["Multiple businesses", "Custom intake flows", "Calendar booking", "Priority support"] },
-            ].map((p) => (
-              <div key={p.name} className={`card relative p-7 ${p.featured ? "border-primary shadow-lift" : ""}`}>
-                {p.featured && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary to-accent px-3 py-1 text-xs font-semibold text-white">
-                    Most popular
-                  </span>
-                )}
-                <h3 className="font-semibold">{p.name}</h3>
-                <div className="mt-2 font-display text-3xl">{p.price}</div>
-                <div className="text-xs text-ink-faint">{p.tag}</div>
-                <ul className="mt-5 space-y-2.5 text-sm text-ink-dim">
-                  {p.items.map((it) => (
-                    <li key={it} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden /> {it}
-                    </li>
-                  ))}
-                </ul>
-                {p.featured ? (
-                  <SubscribeButton />
-                ) : (
-                  <a href="#demo" className="btn-ghost mt-6 w-full">Start with the demo</a>
-                )}
-              </div>
-            ))}
-          </div>
-          <p className="mt-6 text-center text-xs text-ink-faint">
-            Checkout runs in Lemon Squeezy <strong>test mode</strong> — try it with card 4242 4242 4242 4242, any future date, any CVC. No real charges.
-          </p>
-        </div>
-      </section>
+      <Pricing />
 
       {/* Footer */}
       <footer className="container-page flex flex-col items-center justify-between gap-3 py-10 text-sm text-ink-faint sm:flex-row">
